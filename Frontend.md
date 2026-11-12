@@ -87,6 +87,13 @@ of disconnected AI tools.
    pinned backend OpenAPI contract.
 9. **Mobile-aware.** Students may use low-bandwidth mobile devices and voice
    input; avoid assuming a large screen or stable connection.
+10. **Distinctive visual identity.** Do not default to a generic AI/SaaS
+    template, indigo gradients, or repeated icon-and-card layouts. Establish
+    Gurukul's own palette, typography, imagery, and page composition before
+    building screens.
+11. **Motion with purpose.** Use animation to clarify interaction and add
+    character, not as decoration on every element. Respect reduced-motion
+    preferences and keep core interactions usable without animation.
 
 ---
 
@@ -107,16 +114,20 @@ TypeScript versions. Pin versions in the lockfile and upgrade intentionally.
 
 ### 3.2 UI and styling
 
-Recommended reusable stack:
+Use shadcn/ui as the accessible, editable component foundation. Use Magic UI
+and React Bits selectively for distinctive animated components, and compose
+them into Gurukul's own design system rather than adopting a template wholesale.
+Tailwind CSS remains the styling and design-token layer.
 
 | Dependency/category | Purpose |
 |---|---|
 | Tailwind CSS | Utility styling and design tokens |
-| shadcn/ui | Accessible reusable component foundations |
-| Radix UI | Accessible primitives used by shadcn/ui |
+| shadcn/ui | Accessible component source added to the app and customized locally |
+| Magic UI | Optional animated components installed from its shadcn registry |
+| React Bits | Optional reusable motion components installed from its registry |
 | `class-variance-authority` | Typed component variants |
 | `clsx` and `tailwind-merge` | Class composition |
-| Lucide React | Consistent icon set |
+| Lucide React or another selected icon set | Use icons consistently and only where they improve comprehension |
 | `next-themes` | Theme preference and dark mode |
 | `sonner` or equivalent | Toast notifications |
 | `cmdk` | Command/search palette if needed |
@@ -126,7 +137,53 @@ Recommended reusable stack:
 | KaTeX/MathJax adapter | Mathematical notation where required |
 
 Use a design-system layer around third-party components. Do not scatter raw
-Radix or vendor-specific props throughout feature code.
+Radix or vendor-specific props throughout feature code. shadcn/ui, Magic UI,
+and React Bits components are source code in this project, not a mandate to
+use their default colors, layouts, or component styling.
+
+#### Motion and 3D
+
+| Library | Use |
+|---|---|
+| GSAP (`gsap`, `@gsap/react`) | Carefully scoped timelines, scroll-linked sequences, and complex interaction choreography |
+| Auto Animate (`@formkit/auto-animate`) | Small list and layout insert/remove/reorder transitions |
+| Magic UI and React Bits | Selected source components for polished effects, hover treatments, and text or background motion |
+| Vanta.js with Three.js (`vanta`, `three`) | Optional interactive 3D background for the landing-page hero only |
+
+Use CSS transitions for ordinary hover and focus feedback. Avoid running more
+than one animation system on the same element, global fake cursor effects, and
+continuous animation that competes with reading or learning. Make neon/glow
+hover effects restrained, theme-aware, keyboard-visible, and disabled or
+reduced for touch, low-power, and reduced-motion contexts.
+
+Vanta is an enhancement, not the hero's only background: lazy-load it in a
+client component, destroy its instance on unmount, and provide a static
+brand-colored or image fallback. Keep it limited to one hero effect and test
+its cost and behavior on mobile and WebGL-disabled browsers.
+
+#### Install commands (npm)
+
+Run package installation from the frontend project directory:
+
+```powershell
+cd .\gurukul-fe
+npm install gsap @gsap/react @formkit/auto-animate vanta three
+npx shadcn@latest init
+```
+
+shadcn/ui, Magic UI, and React Bits add selected component source files to the
+project; they are not all installed as one runtime package. Add only the
+components the design needs. For example:
+
+```powershell
+npx shadcn@latest add button card dialog
+npx shadcn@latest add "https://magicui.design/r/magic-card.json"
+npx shadcn@latest add @react-bits/SplitText-TS-TW
+```
+
+The React Bits registry suffix selects its JavaScript/TypeScript and
+CSS/Tailwind variant. Check each component's current instructions for any
+additional dependencies, then commit the resulting source and lockfile.
 
 ### 3.3 Forms and validation
 
@@ -1039,7 +1096,9 @@ Define tokens for:
 - Motion durations
 - Breakpoints
 
-Tokens must support light and dark themes and meet contrast requirements.
+Choose a palette and typography with a recognizable Gurukul identity; do not
+use indigo or purple as an unexamined default. Tokens must support light and
+dark themes and meet contrast requirements.
 
 ### 10.2 Primitive components
 
@@ -1072,7 +1131,9 @@ ErrorState
 ConfirmDialog
 ```
 
-Use shadcn/ui/Radix foundations and keep local wrappers consistent.
+Use shadcn/ui/Radix foundations and keep local wrappers consistent. Customize
+the component styling and composition to the product; do not let the default
+shadcn dashboard look determine the visual design.
 
 ### 10.3 Feature components
 
@@ -1087,7 +1148,24 @@ AssistantMessage = prose renderer + CitationList + MessageActions
 Do not let generic components know about backend route names or domain
 permissions.
 
-### 10.4 Component API standards
+### 10.4 Motion and interactive effects
+
+- Use GSAP for complex, coordinated timelines and interactions; use its React
+  hook or context cleanup so animations are reverted when components unmount.
+- Use Auto Animate for straightforward changes to a list or its immediate
+  children, not as a general-purpose animation engine.
+- Add Magic UI and React Bits components one at a time, review their
+  dependencies and accessibility, and adapt their styles to the design tokens.
+- Prefer CSS transitions for simple hover, focus, and press feedback.
+- Use pointer-following or neon effects only on components where they reinforce
+  an interaction. Provide equivalent focus-visible feedback and avoid
+  cursor-following effects on touch devices.
+- Honor `prefers-reduced-motion`; remove or substantially reduce nonessential
+  movement, including Vanta's animation.
+- Do not animate streamed chat text token-by-token with heavyweight timelines.
+  Keep streaming readable and avoid layout shifts.
+
+### 10.5 Component API standards
 
 Reusable components should:
 
@@ -1159,6 +1237,8 @@ Do not make the entire authenticated shell a client component.
 
 - Import heavy charts only on pages that use them.
 - Dynamically import audio visualizers and math renderers.
+- Dynamically load GSAP and Vanta only on routes/components that use them;
+  never initialize a Vanta/WebGL background globally.
 - Avoid importing entire utility libraries.
 - Use `next/image` for optimized images.
 - Use `next/font` or a controlled font strategy.
@@ -1523,10 +1603,12 @@ Measure bundle size and route-level JavaScript changes in CI.
 1. Copy .env.example to .env.local.
 2. Start the local backend and AI services.
 3. Install locked Node dependencies.
-4. Generate API types from the pinned backend contract.
-5. Start Next.js in development mode.
-6. Run unit/component tests.
-7. Run Playwright tests against local services.
+4. Initialize shadcn/ui if it has not already been configured, then add only
+   the required component sources from shadcn/ui, Magic UI, and React Bits.
+5. Generate API types from the pinned backend contract.
+6. Start Next.js in development mode.
+7. Run unit/component tests.
+8. Run Playwright tests against local services.
 ```
 
 ### 18.2 Mock mode
@@ -1820,7 +1902,10 @@ The backend remains authoritative for execution and status.
 ### Step 1: Project foundation
 
 - Create the Next.js TypeScript repository.
-- Add Tailwind, shadcn/ui, Radix, tokens, and base layout.
+- Add Tailwind and shadcn/ui, define a distinctive Gurukul design system, and
+  add only the reusable Magic UI/React Bits components needed by the product.
+- Add GSAP and Auto Animate for intentional interaction motion. Add Vanta.js
+  and Three.js only if the landing-page hero needs the optional 3D background.
 - Configure linting, formatting, testing, and environment validation.
 - Add public marketing and error/loading shells.
 
