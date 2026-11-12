@@ -27,12 +27,12 @@ export default function AuthLayout({
         <div className="art-copy">
           <p className="eyebrow"><span aria-hidden="true">✳</span> YOUR NEXT CHAPTER</p>
           <h1 data-hover-tilt="4.5" data-hover-depth="9">
-            A Gurukul
+            From &quot;huh?&quot;
             <br />
-            <span>powered by AI.</span>
+            <span>to &quot;aha!&quot; with AI.</span>
           </h1>
           <p className="art-description">
-            An AI study companion that explains tricky ideas, solves doubts,
+            A patient study companion that explains tricky ideas, solves doubts,
             and helps every student grow.
           </p>
         </div>

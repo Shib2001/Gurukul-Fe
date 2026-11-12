@@ -132,15 +132,6 @@
   z-index: 5;
 }
 
-.photo,
-.art-copy h1 {
-  cursor: url("/pencil-cursor.svg") 4 27, auto;
-}
-
-.art-brand {
-  cursor: url("/pencil-cursor.svg") 4 27, pointer;
-}
-
 .photo img {
   object-fit: cover;
 }
@@ -686,4 +677,18 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.auth-layout,
+.auth-layout * {
+  cursor: url("/pencil-cursor.svg") 4 27, auto;
+}
+
+.auth-layout a,
+.auth-layout button {
+  cursor: url("/pencil-cursor.svg") 4 27, pointer;
+}
+
+.auth-layout input {
+  cursor: url("/pencil-cursor.svg") 4 27, text;
 }
