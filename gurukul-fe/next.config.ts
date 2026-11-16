@@ -4,6 +4,9 @@ const apiBaseUrl =
   process.env.LOCAL_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [{ source: "/", destination: "/dashboard", permanent: false }];
+  },
   env: {
     NEXT_PUBLIC_API_BASE_URL: apiBaseUrl ?? "",
   },
