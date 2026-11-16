@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
-import { AuthHoverMotion } from "@/app/components/auth/auth-hover-motion";
+import { AuthHoverMotion } from "@/features/auth/components/auth-hover-motion";
+import { BrandLink } from "@/components/ui/brand-link";
 import "./auth.css";
 
 export default function AuthLayout({
@@ -12,15 +12,13 @@ export default function AuthLayout({
     <main className="auth-layout">
       <aside className="auth-art" aria-label="Learning at Gurukul.ai">
         <div className="art-topline">
-          <Link className="art-brand" href="/login" aria-label="Gurukul.ai home" data-hover-tilt="3" data-hover-depth="6">
-            <Image
-              src="/Gurukul.ai (B-FONT).png"
-              alt="Gurukul.ai"
-              fill
-              sizes="176px"
-              priority
-            />
-          </Link>
+          <BrandLink
+            className="art-brand"
+            href="/login"
+            label="Gurukul.ai home"
+            sizes="176px"
+            priority
+          />
           <span className="art-edition">A place to grow</span>
         </div>
 

@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
+const apiBaseUrl =
+  process.env.LOCAL_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_API_BASE_URL: apiBaseUrl ?? "",
+  },
   /* config options here */
   experimental: {
     agentFeedback: true,
